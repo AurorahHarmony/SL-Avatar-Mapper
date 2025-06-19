@@ -1,0 +1,18 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../db/db.sqlite"
+}
+
+model AvatarProfileImage {
+  id        String   @id // SL avatar UUID
+  imageUrl  String // Profile image url
+  updatedAt DateTime @updatedAt // Auto-updated on change
+}

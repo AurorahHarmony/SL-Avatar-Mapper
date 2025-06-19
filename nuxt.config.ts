@@ -1,3 +1,4 @@
+import tailwindcss from "@tailwindcss/vite";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -10,11 +11,19 @@ export default defineNuxtConfig({
     },
   },
   devtools: { enabled: true },
-  modules: ["@nuxt/eslint", "@nuxt/test-utils", "@nuxt/fonts", "@vueuse/nuxt"],
+  css: ["~/assets/css/main.css"],
+  modules: [
+    "@nuxt/eslint",
+    "@nuxt/test-utils",
+    "@nuxt/fonts",
+    "@vueuse/nuxt",
+    "@prisma/nuxt",
+  ],
   vite: {
     server: {
       allowedHosts: isProduction ? [] : ["maresnest-test.harmonylink.io"],
     },
+    plugins: [tailwindcss()],
   },
   nitro: {
     experimental: {

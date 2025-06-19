@@ -67,6 +67,21 @@ function tweenMarkerPosition(
   requestAnimationFrame(animate);
 }
 
+function zoomToAvatar(avatar: AvatarInfo) {
+  if (!map) return;
+
+  const latlng = L.latLng(avatar.y, avatar.x);
+  map.setView(latlng, 3, {
+    animate: true,
+    duration: 0.5,
+  });
+
+  const marker = avatarMarkers.get(avatar.id);
+  if (marker) {
+    marker.openPopup();
+  }
+}
+
 watch(avatars, (newAvatars) => {
   if (!map) return;
 
@@ -79,17 +94,18 @@ watch(avatars, (newAvatars) => {
     let marker = avatarMarkers.get(avatar.id);
 
     if (marker) {
-      //   marker.setLatLng(latlng); // ✨ Move marker smoothly
       const currentPos = marker.getLatLng();
 
       if (currentPos.lat !== latlng.lat || currentPos.lng !== latlng.lng) {
-        tweenMarkerPosition(marker, currentPos, latlng, 400); // 400ms animation
+        tweenMarkerPosition(marker, currentPos, latlng, 1500); // 400ms animation
       }
     } else {
       // Create a new marker
+
+      const iconUrl = avatar.image || "/images/avatar-placeholder.jpg";
       marker = L.marker(latlng, {
         icon: L.icon({
-          iconUrl: avatar.image,
+          iconUrl,
           iconSize: [32, 32],
           className: "avatar-icon",
         }),
@@ -142,20 +158,29 @@ onMounted(async () => {
 </script>
 <template>
   <div>
-    <h2>Avatar Positions</h2>
-    <p>Members in region: {{ avatars.length }}</p>
-    <div style="height: 600px">
+    <p class="mb-2 text-center">Members in region: {{ avatars.length }}</p>
+    <div style="height: 600px" class="mb-6">
       <div ref="mapElement" style="height: 100%; width: 100%" />
     </div>
-    <ul>
-      <li v-for="a in avatars" :key="a.id">
+    <p class="text-2xl">Online Members:</p>
+    <div
+      class="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+    >
+      <div
+        v-for="avatar in avatars"
+        :key="avatar.id"
+        class="bg-slate-400/15 rounded-xl p-1 flex items-center duration-200 hover:bg-slate-400/30 cursor-pointer"
+        @click="zoomToAvatar(avatar)"
+      >
         <img
-          style="height: 50px; border-radius: 100%"
-          :src="a.image || '/images/avatar-placeholder.jpg'"
+          :src="avatar.image || '/images/avatar-placeholder.jpg'"
+          class="w-14 h-14 object-cover rounded-sm"
         />
-        {{ a.displayName }} at ({{ a.x }}, {{ a.y }}, {{ a.z }})
-      </li>
-    </ul>
+        <div class="px-4">
+          {{ avatar.displayName }}
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <style scoped>
