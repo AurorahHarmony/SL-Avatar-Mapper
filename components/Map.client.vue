@@ -151,7 +151,7 @@ onMounted(async () => {
       <li v-for="a in avatars" :key="a.id">
         <img
           style="height: 50px; border-radius: 100%"
-          :src="a.image || '/images/avatar-placeholder.png'"
+          :src="a.image || '/images/avatar-placeholder.jpg'"
         />
         {{ a.displayName }} at ({{ a.x }}, {{ a.y }}, {{ a.z }})
       </li>
