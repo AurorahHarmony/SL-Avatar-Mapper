@@ -7,6 +7,8 @@ services:
       - "3000:3000"
     environment:
       NODE_ENV: production
+    volumes:
+      - db-data:/app/server/prisma/db
 
   cloudflared:
     image: cloudflare/cloudflared:latest
@@ -14,3 +16,6 @@ services:
     restart: unless-stopped
     depends_on:
       - nuxt
+
+volumes:
+  db-data:
