@@ -26,3 +26,4 @@ logs
 # Prisma
 /generated/prisma
 db
+/lib/generated/prisma

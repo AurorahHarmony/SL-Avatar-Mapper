@@ -174,7 +174,7 @@ onMounted(async () => {
       >
         <img
           :src="avatar.image || '/images/avatar-placeholder.jpg'"
-          class="w-14 h-14 object-cover rounded-sm"
+          class="w-14 h-14 object-cover rounded-lg"
         />
         <div class="px-4">
           {{ avatar.displayName }}

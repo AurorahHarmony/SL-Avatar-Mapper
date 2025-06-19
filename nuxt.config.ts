@@ -7,7 +7,9 @@ export default defineNuxtConfig({
   components: true,
   runtimeConfig: {
     public: {
-      wsBase: "wss://maresnest-test.harmonylink.io",
+      wsBase: isProduction
+        ? "wss://maresnest.harmonylink.io" // Production URL
+        : "wss://maresnest-test.harmonylink.io", // Development URL
     },
   },
   devtools: { enabled: true },
@@ -20,8 +22,16 @@ export default defineNuxtConfig({
     "@prisma/nuxt",
   ],
   vite: {
+    resolve: {
+      alias: {
+        ".prisma/client/index-browser":
+          "./node_modules/.prisma/client/index-browser.js",
+      },
+    },
     server: {
-      allowedHosts: isProduction ? [] : ["maresnest-test.harmonylink.io"],
+      allowedHosts: isProduction
+        ? ["maresnest.harmonylink.io"]
+        : ["maresnest-test.harmonylink.io"],
     },
     plugins: [tailwindcss()],
   },
