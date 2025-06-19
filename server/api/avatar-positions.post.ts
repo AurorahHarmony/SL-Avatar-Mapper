@@ -31,7 +31,10 @@ async function fetchProfileImage(id: string): Promise<string | null> {
 
     console.log(imgId);
 
-    const imgUrl = `https://picture-service.secondlife.com/${imgId}/256x192.jpg`;
+    const imgUrl =
+      imgId === "00000000-0000-0000-0000-000000000000"
+        ? null
+        : `https://picture-service.secondlife.com/${imgId}/256x192.jpg`;
 
     if (imgUrl) {
       avatarImageCache.set(id, imgUrl);
