@@ -1,4 +1,6 @@
 <script setup lang="ts">
+const config = useRuntimeConfig();
+
 interface AvatarInfo {
   id: string;
   name: string;
@@ -9,16 +11,17 @@ interface AvatarInfo {
   z: number;
 }
 
-const { data } = useWebSocket(`wss://${location.host}/map/avatar-positions`);
+const { data } = useWebSocket(`${config.public.wsBase}/map/avatar-positions`);
 
-const avatars = computed<AvatarInfo[]>(() => {
+const avatars = ref<AvatarInfo[]>([]);
+
+watch(data, (newValue) => {
   try {
-    const parsed = JSON.parse(data.value || "{}");
+    const parsed = JSON.parse(newValue || "{}");
     console.log(parsed.data);
-
-    return parsed.data;
+    avatars.value = parsed.data;
   } catch {
-    return [];
+    avatars.value = [];
   }
 });
 </script>

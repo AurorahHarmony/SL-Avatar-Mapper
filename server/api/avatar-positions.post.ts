@@ -13,6 +13,12 @@ interface AvatarInfo {
 
 const avatarImageCache = new Map<string, string>();
 
+let avatarList: (AvatarInfo & { image: string | null })[] = [];
+
+export function getAvatarList() {
+  return avatarList;
+}
+
 async function fetchProfileImage(id: string): Promise<string | null> {
   if (avatarImageCache.has(id)) {
     return avatarImageCache.get(id)!;
@@ -49,7 +55,9 @@ export default defineEventHandler(async (event) => {
     })
   );
 
-  const message = JSON.stringify({ data: enriched });
+  avatarList = enriched;
+
+  const message = JSON.stringify({ data: avatarList });
   for (const peer of peers) {
     try {
       if (peer.websocket && typeof peer.websocket.send === "function") {
