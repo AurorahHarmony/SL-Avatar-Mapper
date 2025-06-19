@@ -5,3 +5,7 @@ dist
 .nuxt
 Dockerfile.dev
 docker-compose.dev.yml
+db
+.env*
+README.md
+Caddyfile

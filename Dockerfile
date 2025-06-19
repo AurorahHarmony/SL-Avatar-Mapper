@@ -1,27 +1,29 @@
-# Stage 1: Build
-FROM node:20 AS builder
-
+# Build Stage 1
+FROM node:22-alpine AS build
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install
+RUN corepack enable
 
-COPY . .
+# Copy dependencies
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# Copy project files
+COPY . ./
+
+# Build Nuxt
 RUN npm run build
 
-# Stage 2: Production runtime
-FROM node:20 AS runner
-
+# Runtime Stage
+FROM node:22-alpine
 WORKDIR /app
 
-# Copy only necessary files from build
-COPY --from=builder /app/.output ./.output
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/db ./db  # Prisma sqlite DB if needed
-COPY --from=builder /app/public ./public
+# Copy built output
+COPY --from=build /app/.output ./
 
-RUN npm install --omit=dev
+ENV PORT=3000
+ENV HOST=0.0.0.0
 
 EXPOSE 3000
 
-CMD ["node", ".output/server/index.mjs"]
+CMD ["node", "/app/server/index.mjs"]
