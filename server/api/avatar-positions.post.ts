@@ -25,11 +25,21 @@ const avatarImageCache = new Map<
 let avatarList: (AvatarInfo & {
   image: string | null;
   blurHash: string | "";
+  isStaff: boolean;
 })[] = [];
 
 export function getAvatarList() {
   return avatarList;
 }
+
+const STAFF_UUIDS = new Set([
+  "54de3375-a7b0-4f76-b47b-5c8ff9a55431", // Vespy
+  "22624025-ec67-46d4-b231-f71481df98df", // Breezy
+  "15ae1300-9002-4ad5-a835-a1506684122f", // Scankatze
+  "09cc3a00-2e2a-4aa9-a3b1-c2c3d82c5886", // Nea
+  "63fc826f-5443-4977-897f-1b2faacb8d2f", // Hereafter
+  "30a123a0-e854-4fae-81f3-977752ab24b0", // Electric Arc
+]);
 
 async function fetchProfileImage(
   avatarId: string
@@ -171,11 +181,21 @@ export default defineEventHandler(async (event) => {
   const enriched = await Promise.all(
     body.map(async (avatar) => {
       const { imageUrl, blurHash } = await fetchProfileImage(avatar.id);
-      return { ...avatar, image: imageUrl, blurHash };
+      return {
+        ...avatar,
+        image: imageUrl,
+        blurHash,
+        isStaff: STAFF_UUIDS.has(avatar.id),
+      };
     })
   );
 
-  avatarList = enriched;
+  avatarList = enriched.sort((a, b) => {
+    // Sort staff first
+    if (a.isStaff && !b.isStaff) return -1;
+    if (!a.isStaff && b.isStaff) return 1;
+    return 0; // preserve order otherwise
+  });
 
   const message = JSON.stringify({ data: avatarList });
   for (const peer of peers) {

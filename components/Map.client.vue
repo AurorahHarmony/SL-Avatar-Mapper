@@ -14,6 +14,7 @@ interface AvatarInfo {
   displayName: string;
   image: string;
   blurHash: string;
+  isStaff: boolean;
   x: number;
   y: number;
   z: number;
@@ -181,7 +182,8 @@ onMounted(async () => {
           class="w-14 h-14 rounded-lg"
         />
         <div class="px-4">
-          {{ avatar.displayName }}
+          <p>{{ avatar.displayName }}</p>
+          <p v-if="avatar.isStaff" class="text-xs text-yellow-200">Staff</p>
         </div>
       </div>
     </div>
