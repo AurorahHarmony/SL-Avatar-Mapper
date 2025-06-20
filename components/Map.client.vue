@@ -97,7 +97,7 @@ watch(avatars, (newAvatars) => {
       const currentPos = marker.getLatLng();
 
       if (currentPos.lat !== latlng.lat || currentPos.lng !== latlng.lng) {
-        tweenMarkerPosition(marker, currentPos, latlng, 1500); // 400ms animation
+        tweenMarkerPosition(marker, currentPos, latlng, 2000); // 2s animation
       }
     } else {
       // Create a new marker
