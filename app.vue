@@ -1,4 +1,8 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+useHead({
+  title: "Mare's Nest",
+});
+</script>
 <template>
   <div class="px-2 mb-12">
     <img
