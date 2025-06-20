@@ -13,6 +13,7 @@ interface AvatarInfo {
   name: string;
   displayName: string;
   image: string;
+  blurHash: string;
   x: number;
   y: number;
   z: number;
@@ -172,9 +173,12 @@ onMounted(async () => {
         class="bg-slate-400/15 rounded-xl p-1 flex items-center duration-200 hover:bg-slate-400/30 cursor-pointer"
         @click="zoomToAvatar(avatar)"
       >
-        <img
-          :src="avatar.image || '/images/avatar-placeholder.jpg'"
-          class="w-14 h-14 object-cover rounded-lg"
+        <BlurHashImage
+          :hash="avatar.blurHash"
+          :image="avatar.image || '/images/avatar-placeholder.jpg'"
+          decode-width="4"
+          decode-height="3"
+          class="w-14 h-14 rounded-lg"
         />
         <div class="px-4">
           {{ avatar.displayName }}

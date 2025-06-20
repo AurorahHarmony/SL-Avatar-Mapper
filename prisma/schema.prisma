@@ -13,5 +13,6 @@ datasource db {
 model AvatarProfileImage {
   id        String   @id // SL avatar UUID
   imageUrl  String // Profile image url
+  blurHash  String   @default("") // Blurhash of the found image
   updatedAt DateTime @updatedAt // Auto-updated on change
 }
