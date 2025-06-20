@@ -161,7 +161,7 @@ onMounted(async () => {
 <template>
   <div>
     <p class="mb-2 text-center">Members in region: {{ avatars.length }}</p>
-    <div style="height: 600px" class="mb-6">
+    <div class="mb-6 h-[400px] md:h-[600px]">
       <div ref="mapElement" style="height: 100%; width: 100%" />
     </div>
     <p class="text-2xl">Online Members:</p>
