@@ -2,6 +2,7 @@
 import "leaflet/dist/leaflet.css";
 import * as L from "leaflet";
 import type { Map } from "leaflet";
+import { decode } from "blurhash";
 
 const mapElement = ref<HTMLDivElement | null>(null);
 let map: Map | null = null;
@@ -27,7 +28,6 @@ const avatars = ref<AvatarInfo[]>([]);
 watch(data, (newValue) => {
   try {
     const parsed = JSON.parse(newValue || "{}");
-    console.log(parsed.data);
     avatars.value = parsed.data;
   } catch {
     avatars.value = [];
@@ -132,6 +132,29 @@ watch(avatars, (newAvatars) => {
   }
 });
 
+const getBlurhashDataURL = (
+  hash: string,
+  width: number,
+  height: number
+): string => {
+  try {
+    const pixels = decode(hash, width, height);
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return "";
+
+    const imageData = ctx.createImageData(width, height);
+    imageData.data.set(pixels);
+    ctx.putImageData(imageData, 0, 0);
+    return canvas.toDataURL();
+  } catch (e) {
+    console.error("BlurHash decode error:", e);
+    return "";
+  }
+};
+
 onMounted(async () => {
   await nextTick();
   if (!mapElement.value) return;
@@ -155,8 +178,48 @@ onMounted(async () => {
     [bounds[1][0] + padding, bounds[1][1] + padding],
   ];
 
+  // const mapImg = "/regions/the-mares-nest/map.jpg";
+  // L.imageOverlay(mapImg, bounds).addTo(map);
+
+  // 1. Define your map's BlurHash (replace with actual hash)
+  const mapBlurhash =
+    "|AAKa8~CjFIn$+xuWBInnSRSRlI:R%n,oMocoyj[IV%1%M%2M|Ion,kCofVvOUWBRkofsCR*sokBw4kUadRkoft5flWBWBNHtQt7oLNFWTjukCoMNHjuWEWWaekBj[j[baxtocs:s:s:WCWBjba#jINGWBjZW.oes:s:f6";
+
+  // 2. Create BlurHash placeholder
+  const blurhashDataURL = getBlurhashDataURL(mapBlurhash, 256, 256);
+  const placeholderOverlay = L.imageOverlay(blurhashDataURL, bounds).addTo(map);
+
+  // 3. Preload actual map image
   const mapImg = "/regions/the-mares-nest/map.jpg";
-  L.imageOverlay(mapImg, bounds).addTo(map);
+  const realImage = new Image();
+
+  realImage.onload = () => {
+    if (placeholderOverlay && map) {
+      // Create actual image overlay with initial opacity 0
+      const realOverlay = L.imageOverlay(mapImg, bounds, {
+        opacity: 0, // Start fully transparent
+      }).addTo(map);
+
+      // Access the underlying image element
+      const imgElement = realOverlay._image;
+
+      // Set up CSS transition for smooth fade-in
+      imgElement.style.transition = "opacity 0.5s ease-in-out";
+
+      // Trigger fade-in animation
+      setTimeout(() => {
+        realOverlay.setOpacity(1); // Animate to full opacity
+      }, 10);
+
+      // Remove placeholder after fade-in completes
+      setTimeout(() => {
+        if (!map) return;
+        map.removeLayer(placeholderOverlay);
+      }, 510); // Match transition duration + slight buffer
+    }
+  };
+
+  realImage.src = mapImg;
 
   map.setMaxBounds(looseBounds);
   map.fitBounds(bounds);
@@ -183,8 +246,8 @@ onMounted(async () => {
         <BlurHashImage
           :hash="avatar.blurHash"
           :image="avatar.image || '/images/avatar-placeholder.jpg'"
-          decode-width="4"
-          decode-height="3"
+          :decode-width="4"
+          :decode-height="3"
           class="w-14 h-14 rounded-lg"
         />
         <div class="px-4">
