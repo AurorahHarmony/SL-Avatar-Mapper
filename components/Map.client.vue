@@ -73,9 +73,9 @@ function zoomToAvatar(avatar: AvatarInfo) {
   if (!map) return;
 
   const latlng = L.latLng(avatar.y, avatar.x);
-  map.setView(latlng, 3, {
+  map.flyTo(latlng, 4, {
     animate: true,
-    duration: 0.5,
+    duration: 0.75,
   });
 
   const marker = avatarMarkers.get(avatar.id);
@@ -143,16 +143,22 @@ onMounted(async () => {
     attributionControl: false,
   });
 
+  const padding = 32;
+
   const bounds = [
     [0, 0],
     [256, 256],
   ];
 
-  const mapImg =
-    "https://secondlife-maps-cdn.akamaized.net/map-1-1005-1101-objects.jpg";
+  const looseBounds = [
+    [bounds[0][0] - padding, bounds[0][1] - padding],
+    [bounds[1][0] + padding, bounds[1][1] + padding],
+  ];
+
+  const mapImg = "/regions/the-mares-nest/map.jpg";
   L.imageOverlay(mapImg, bounds).addTo(map);
 
-  map.setMaxBounds(bounds);
+  map.setMaxBounds(looseBounds);
   map.fitBounds(bounds);
 
   map.addLayer(avatarLayer);
